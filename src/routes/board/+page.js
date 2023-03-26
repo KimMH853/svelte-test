@@ -5,7 +5,7 @@ export const load = async ({ fetch }) => {
   //   return {
   //     products: products,
   //   };
-  const testRes = await fetch("http://localhost:3000/board");
+  const testRes = await fetch("http://localhost:3000/board/list");
   const testData = await testRes.json();
   return { testData };
 };
