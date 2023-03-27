@@ -1,15 +1,27 @@
 <script>
   import { onMount } from "svelte";
-  export let data;
-  console.log(data);
-  let { testData, size } = data.testData;
 
-  //let totalPages = parseInt(testData.length / 15);
-  let totalPages = Math.ceil(size / 15);
+  let testData = [];
+  let totalPages = null;
+
+  onMount(async () => {
+    const res = await fetch(
+      `http://localhost:7000/board/list?offset=0&limit=15`
+    );
+    testData = await res.json();
+    const resSize = await fetch(`http://localhost:7000/board/list/count`);
+    const sizeObject = await resSize.json();
+
+    const size = parseInt(sizeObject[0]["COUNT(*)"]);
+    totalPages = Math.ceil(size / 15);
+    pages = createPagesArray(totalPages);
+  });
+
   let currentPage = 1;
   let pages = [];
 
   const createPagesArray = (total) => {
+    console.log(total);
     let arr = [];
     for (let i = 1; i <= total; i++) {
       arr.push(i);
@@ -19,16 +31,13 @@
   };
 
   const changePage = async (page) => {
+    const offset = (page - 1) * 15;
     const pageRes = await fetch(
-      `http://localhost:3000/board/list?page=${page}`
+      `http://localhost:7000/board/list?offset=${offset}&limit=15`
     );
-    data = await pageRes.json();
-    testData = data.testData;
+    testData = await pageRes.json();
     currentPage = page;
   };
-  pages = createPagesArray(totalPages);
-  console.log(totalPages);
-  console.log(pages);
 </script>
 
 <svelte:head>
